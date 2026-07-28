@@ -1,0 +1,13 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+application {
+    mainClass = 'id.adiputera.demo.cms.generator.Generator'
+}
+
+dependencies {
+    implementation 'org.yaml:snakeyaml:2.2'
+    implementation 'org.freemarker:freemarker:2.3.32'
+}

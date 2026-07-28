@@ -1,0 +1,5 @@
+models:
+  Product:
+    attributes:
+      customSeoTitle:
+        type: String

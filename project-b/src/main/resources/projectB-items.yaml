@@ -1,0 +1,5 @@
+models:
+  Product:
+    attributes:
+      internalWarehouseId:
+        type: Long

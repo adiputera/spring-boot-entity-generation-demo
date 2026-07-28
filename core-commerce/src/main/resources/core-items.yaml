@@ -1,0 +1,44 @@
+imports:
+  - "jakarta.persistence.*"
+  - "lombok.Data"
+
+models:
+  AbstractItemModel:
+    package: "id.adiputera.demo.cms.core.models"
+    isAbstract: true
+    imports:
+      - "org.springframework.data.annotation.CreatedDate"
+      - "org.springframework.data.annotation.LastModifiedDate"
+      - "org.springframework.data.jpa.domain.support.AuditingEntityListener"
+    annotations:
+      - "@Data"
+      - "@MappedSuperclass"
+      - "@EntityListeners(AuditingEntityListener.class)"
+    attributes:
+      id:
+        type: Long
+        isPrimaryKey: true
+      creationTime:
+        type: java.time.LocalDateTime
+        annotations:
+          - "@CreatedDate"
+          - "@Column(updatable = false)"
+      modifiedTime:
+        type: java.time.LocalDateTime
+        annotations:
+          - "@LastModifiedDate"
+
+  Product:
+    package: "id.adiputera.demo.cms.product.models"
+    table: "core_products"
+    imports:
+      - "lombok.EqualsAndHashCode"
+    annotations:
+      - "@Data"
+      - "@EqualsAndHashCode(callSuper = true)"
+    attributes:
+      code:
+        type: String
+        unique: true
+      name:
+        type: String
