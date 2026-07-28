@@ -12,13 +12,7 @@ jar {
     enabled = true
 }
 
-sourceSets {
-    models {
-        java {
-            srcDir "${buildDir}/generated-sources/models"
-        }
-    }
-}
+apply from: '../models-plugin.gradle'
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -27,35 +21,7 @@ dependencies {
     
     implementation project(':core-commerce')
     
-    modelsImplementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    
     implementation files("${buildDir}/generated-models/models.jar")
-}
-
-task generateModels(type: JavaExec) {
-    classpath = project(':models-generator').sourceSets.main.runtimeClasspath
-    mainClass = 'id.adiputera.demo.cms.generator.Generator'
-    
-    def outputDir = "${buildDir}/generated-sources/models"
-    def coreYaml = file("../core-commerce/src/main/resources/core-items.yaml")
-    def extYaml = file("src/main/resources/projectA-items.yaml")
-    
-    args = [outputDir, coreYaml.absolutePath, extYaml.absolutePath]
-    
-    inputs.file(coreYaml)
-    inputs.file(extYaml)
-    outputs.dir(outputDir)
-}
-
-compileModelsJava {
-    dependsOn generateModels
-}
-
-task modelsJar(type: Jar) {
-    dependsOn compileModelsJava
-    archiveFileName = 'models.jar'
-    destinationDirectory = file("${buildDir}/generated-models")
-    from sourceSets.models.output
 }
 
 compileJava {

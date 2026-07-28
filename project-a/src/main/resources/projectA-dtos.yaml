@@ -1,0 +1,14 @@
+dtos:
+  ProductDTO:
+    attributes:
+      seoTitle:
+        type: String
+    mappings:
+      # Map the 'customSeoTitle' field from the Project A Entity into 'seoTitle' in the DTO
+      - target: "seoTitle"
+        source: "customSeoTitle"
+        
+      # Provide a custom java expression for formattedPrice
+      # Overrides the mapping from core-dtos.yaml
+      - target: "formattedPrice"
+        expression: "java(\"ProjectA Price: \" + \"$99.99\")"

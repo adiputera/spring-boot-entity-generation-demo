@@ -1,0 +1,95 @@
+# ==============================================================================
+# Custom DTO Generator - YAML DSL Reference
+# This file serves as the official schema reference for DTO generation.
+# It is kept completely separate from Model generation to ensure strict 
+# separation of concerns (e.g. Model has Price Entity, DTO has String price).
+# ==============================================================================
+
+# Global imports applied to every generated DTO class
+imports:
+  - "java.util.List"
+  - "io.swagger.v3.oas.annotations.media.Schema"
+
+dtos:
+  # --------------------------------------------------------------------------
+  # 1. Base DTO Definition
+  # --------------------------------------------------------------------------
+  ProductDTO:
+    package: "id.adiputera.demo.cms.product.dtos"
+    # The Entity model this DTO maps to. If present, a MapStruct Mapper will be auto-generated.
+    model: "id.adiputera.demo.cms.product.models.Product"
+    # Class-level imports
+    imports:
+      - "jakarta.validation.constraints.NotNull"
+    annotations:
+      - '@Schema(description = "Product details for frontend")'
+    attributes:
+      code:
+        type: String
+        annotations:
+          - "@NotNull"
+      
+      name:
+        type: String
+        
+      # Example: Frontend doesn't care about the complex Price Entity or internalCostPrice.
+      # They only want a simple formatted string for display.
+      formattedPrice:
+        type: String
+        annotations:
+          - '@Schema(example = "Rp 150.000")'
+          
+      # DTOs can nest other DTOs
+      category:
+        type: CategoryDTO
+
+    # ========================================================================
+    # MAPSTRUCT OVERRIDES & CUSTOMIZATION
+    # ========================================================================
+    
+    # Custom mapping logic for specific fields
+    mappings:
+      - target: "formattedPrice"
+        # You can use standard MapStruct source/target mapping:
+        # source: "basePrice.formattedValue" 
+        
+        # Or you can inject raw Java expressions!
+        expression: "java(\"$\" + \"99.99\")" 
+        
+      # Ignore unmapped fields manually if needed
+      - target: "name"
+        ignore: true
+
+    # Fully override MapStruct logic with a Decorator class
+    # The generated interface will have @DecoratedWith(ProductMapperDecorator.class)
+    # decorator: "id.adiputera.demo.cms.product.dtos.ProductMapperDecorator"
+
+  # --------------------------------------------------------------------------
+  # 2. DTO Inheritance (extends)
+  # --------------------------------------------------------------------------
+  VariantProductDTO:
+    package: "id.adiputera.demo.cms.product.dtos"
+    extends: ProductDTO
+    attributes:
+      size:
+        type: String
+      color:
+        type: String
+
+  # --------------------------------------------------------------------------
+  # 3. Simple Nested DTO & Mapper Opt-out
+  # --------------------------------------------------------------------------
+  CategoryDTO:
+    package: "id.adiputera.demo.cms.category.dtos"
+    
+    # If the logic is incredibly complex and you want to write the mapper 
+    # completely manually, you can opt-out of auto-generation entirely.
+    generateMapper: false
+    
+    attributes:
+      name:
+        type: String
+        
+      # Nested DTOs as Lists (Perfect for JSON payloads)
+      products:
+        type: List<ProductDTO>

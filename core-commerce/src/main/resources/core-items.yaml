@@ -1,8 +1,31 @@
+# ==============================================================================
+# Custom Entity Generator - YAML DSL Reference
+# This file serves as the official schema reference for the generator POC.
+# It contains all the supported features:
+# 1. Custom Imports
+# 2. Enums Definition
+# 3. Custom Annotations (Class and Attribute level)
+# 4. Inheritance (extends)
+# 5. Relations (OneToMany, ManyToOne, etc.)
+# 6. Database Indexes
+# 7. DTO Generation Flags (apiVisible) & Default Values
+# ==============================================================================
+
+# Global imports applied to every generated class
 imports:
   - "jakarta.persistence.*"
-  - "lombok.Data"
+  - "java.util.List"
+
+enums:
+  ProductApprovalStatus:
+    - APPROVED
+    - PENDING
+    - REJECTED
 
 models:
+  # --------------------------------------------------------------------------
+  # Model 0: AbstractItemModel (Base Auditable Entity for all models)
+  # --------------------------------------------------------------------------
   AbstractItemModel:
     package: "id.adiputera.demo.cms.core.models"
     isAbstract: true
@@ -11,7 +34,6 @@ models:
       - "org.springframework.data.annotation.LastModifiedDate"
       - "org.springframework.data.jpa.domain.support.AuditingEntityListener"
     annotations:
-      - "@Data"
       - "@MappedSuperclass"
       - "@EntityListeners(AuditingEntityListener.class)"
     attributes:
@@ -28,17 +50,155 @@ models:
         annotations:
           - "@LastModifiedDate"
 
+  # --------------------------------------------------------------------------
+  # Model 1: Category (Demonstrates OneToMany relation)
+  # --------------------------------------------------------------------------
+  Category:
+    package: "id.adiputera.demo.cms.category.models"
+    # extends is omitted; generator automatically assumes extends: AbstractItemModel
+    table: "core_categories"
+    isAbstract: false
+    # Class-level imports (specific to Category)
+    imports:
+      - "org.hibernate.annotations.Cache"
+      - "org.hibernate.annotations.CacheConcurrencyStrategy"
+    annotations:
+      - "@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)"
+    attributes:
+      name:
+        type: String
+      
+      # Relation Example: One Category has Many Products
+      products:
+        type: List<Product>
+        relation:
+          type: OneToMany
+          mappedBy: "category"
+          cascade: "ALL"
+
+  # --------------------------------------------------------------------------
+  # Model 2: Product (Demonstrates ManyToOne relation, Indexes, Enums, Defaults)
+  # --------------------------------------------------------------------------
   Product:
     package: "id.adiputera.demo.cms.product.models"
     table: "core_products"
+    isAbstract: false
+    # Class-level imports
     imports:
-      - "lombok.EqualsAndHashCode"
-    annotations:
-      - "@Data"
-      - "@EqualsAndHashCode(callSuper = true)"
+      - "com.fasterxml.jackson.annotation.JsonIgnore"
+    # Database Indexes Example (Composite and Unique supported)
+    indexes:
+      - name: "idx_product_code"
+        columns: ["code"]
+        unique: true
+      - name: "idx_product_category_status"
+        columns: ["category_id", "approvalStatus"]
+        unique: false
     attributes:
       code:
         type: String
         unique: true
-      name:
+      
+      # Defining specific column types or lengths
+      description:
         type: String
+        columnDefinition: "VARCHAR(MAX)"
+        nullable: true
+
+      # Enum Usage & Default Value Example
+      approvalStatus:
+        type: ProductApprovalStatus
+        defaultValue: "ProductApprovalStatus.PENDING"
+        annotations:
+          - "@Enumerated(EnumType.STRING)"
+          
+      # Example of an internal field that exists only in the DB Model
+      internalCostPrice:
+        type: java.math.BigDecimal
+      
+      # Custom Annotation Example at Attribute Level
+      internalSecretNote:
+        type: String
+        annotations:
+          - "@JsonIgnore"
+      
+      # Relation Example: Many Products belong to One Category
+      category:
+        type: Category
+        relation:
+          type: ManyToOne
+          joinColumn: "category_id"
+
+      # Relation Example: Unidirectional ManyToOne (Product -> Image)
+      primaryImage:
+        type: Image
+        relation:
+          type: ManyToOne
+          joinColumn: "primary_image_id"
+
+      # Relation Example: Unidirectional OneToMany (Product -> List<Image>)
+      galleryImages:
+        type: List<Image>
+        relation:
+          type: OneToMany
+          joinColumn: "product_id"
+
+      # Relation Example: True "Soft" Relation (List of IDs, no Foreign Key)
+      externalMediaIds:
+        type: List<String>
+        annotations:
+          - "@ElementCollection"
+
+      # Relation Example: ManyToMany between Product and Promotion
+      promotions:
+        type: List<Promotion>
+        relation:
+          type: ManyToMany
+          joinTable: "product_promotions"
+          joinColumn: "product_id"
+          inverseJoinColumn: "promotion_id"
+
+  # --------------------------------------------------------------------------
+  # Model 3: VariantProduct (Demonstrates Inheritance / extends)
+  # --------------------------------------------------------------------------
+  VariantProduct:
+    package: "id.adiputera.demo.cms.product.models"
+    # Generator will automatically apply @Inheritance to Product and @DiscriminatorValue to VariantProduct
+    extends: Product
+    attributes:
+      size:
+        type: String
+      color:
+        type: String
+
+  # --------------------------------------------------------------------------
+  # Model 4: Promotion (Demonstrates ManyToMany relation)
+  # --------------------------------------------------------------------------
+  Promotion:
+    package: "id.adiputera.demo.cms.promotion.models"
+    table: "core_promotions"
+    isAbstract: false
+    attributes:
+      title:
+        type: String
+      
+      # Inverse side of the ManyToMany relation
+      products:
+        type: List<Product>
+        relation:
+          type: ManyToMany
+          mappedBy: "promotions"
+
+  # --------------------------------------------------------------------------
+  # Model 5: Image (Demonstrates Unidirectional Target)
+  # --------------------------------------------------------------------------
+  Image:
+    package: "id.adiputera.demo.cms.media.models"
+    table: "core_images"
+    isAbstract: false
+    attributes:
+      url:
+        type: String
+      
+      # Notice this model has NO relation back to Product!
+      # This makes the Product -> Image relations unidirectional.
