@@ -23,12 +23,13 @@ sourceSets {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    runtimeOnly 'com.h2database:h2'
     
     implementation project(':core-commerce')
     
     modelsImplementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     
-    compileOnly files("${buildDir}/generated-models/models.jar")
+    implementation files("${buildDir}/generated-models/models.jar")
 }
 
 task generateModels(type: JavaExec) {

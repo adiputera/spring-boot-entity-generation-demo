@@ -23,6 +23,7 @@ sourceSets {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    runtimeOnly 'com.h2database:h2'
     
     // Dependencies required to compile the generated models
     modelsImplementation 'org.springframework.boot:spring-boot-starter-data-jpa'
