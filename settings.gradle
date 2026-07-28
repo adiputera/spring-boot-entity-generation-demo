@@ -1,6 +1,6 @@
 rootProject.name = 'entity-generation-demo'
 
-include 'models-generator'
+includeBuild 'models-generator'
 include 'core-commerce'
 include 'project-a'
 include 'project-b'

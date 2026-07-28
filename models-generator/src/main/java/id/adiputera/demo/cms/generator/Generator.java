@@ -19,14 +19,31 @@ import java.util.*;
  * @author Yusuf F. Adiputera
  */
 public class Generator {
+    /**
+     * The legacy main entry point for the Generator.
+     * Use {@link #generate(String, List)} for in-memory plugin execution.
+     *
+     * @param args The command line arguments.
+     * @throws Exception If an error occurs during generation.
+     */
     public static void main(String[] args) throws Exception {
         if (args.length < 2) {
             System.out.println("Usage: Generator <output-dir> <yaml-file1> [<yaml-file2> ...]");
             System.exit(1);
         }
-
         String outputDir = args[0];
         List<String> yamlPaths = Arrays.asList(args).subList(1, args.length);
+        generate(outputDir, yamlPaths);
+    }
+
+    /**
+     * Generates Java models based on the merged YAML definitions.
+     *
+     * @param outputDir The directory where generated models will be written.
+     * @param yamlPaths The list of YAML file paths to parse and merge.
+     * @throws Exception If an error occurs during parsing or generation.
+     */
+    public static void generate(String outputDir, List<String> yamlPaths) throws Exception {
 
         System.out.println("Starting generation into: " + outputDir);
         

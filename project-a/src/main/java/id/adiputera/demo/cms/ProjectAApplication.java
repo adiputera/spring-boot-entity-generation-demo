@@ -10,14 +10,32 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import id.adiputera.demo.cms.core.repository.ProductRepository;
 
+/**
+ * The main application class for Project A.
+ * Initializes the Spring Boot application and configures JPA auditing and repositories.
+ *
+ * @author Yusuf F. Adiputera
+ */
 @SpringBootApplication
 @EnableJpaAuditing
 @EnableJpaRepositories
 public class ProjectAApplication {
+    /**
+     * The main entry point for the Project A Spring Boot application.
+     *
+     * @param args The command line arguments.
+     */
     public static void main(String[] args) {
         SpringApplication.run(ProjectAApplication.class, args);
     }
     
+    /**
+     * Creates a command line runner bean to execute a simple test flow upon startup.
+     *
+     * @param productService The product service used to retrieve product details.
+     * @param productRepository The product repository used for database operations.
+     * @return The CommandLineRunner instance.
+     */
     @Bean
     public CommandLineRunner run(ProductService productService, ProductRepository productRepository) {
         return args -> {

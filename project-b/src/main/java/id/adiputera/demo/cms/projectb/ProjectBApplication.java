@@ -7,12 +7,29 @@ import id.adiputera.demo.cms.product.models.Product;
 import org.springframework.context.annotation.Bean;
 import org.springframework.boot.CommandLineRunner;
 
+/**
+ * The main application class for Project B.
+ * Initializes the Spring Boot application.
+ *
+ * @author Yusuf F. Adiputera
+ */
 @SpringBootApplication(scanBasePackages = "id.adiputera.demo.cms")
 public class ProjectBApplication {
+    /**
+     * The main entry point for the Project B Spring Boot application.
+     *
+     * @param args The command line arguments.
+     */
     public static void main(String[] args) {
         SpringApplication.run(ProjectBApplication.class, args);
     }
     
+    /**
+     * Creates a command line runner bean to execute a simple test flow upon startup.
+     *
+     * @param productService The product service used to retrieve product details.
+     * @return The CommandLineRunner instance.
+     */
     @Bean
     public CommandLineRunner run(ProductService productService) {
         return args -> {

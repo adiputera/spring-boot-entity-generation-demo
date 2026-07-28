@@ -1,13 +1,22 @@
 plugins {
-    id 'java'
-    id 'application'
+    id 'java-gradle-plugin'
 }
 
-application {
-    mainClass = 'id.adiputera.demo.cms.generator.Generator'
+repositories {
+    mavenCentral()
+}
+
+gradlePlugin {
+    plugins {
+        modelsGenerator {
+            id = 'id.adiputera.models-generator'
+            implementationClass = 'id.adiputera.demo.cms.generator.plugin.ModelsGeneratorPlugin'
+        }
+    }
 }
 
 dependencies {
+    implementation gradleApi()
     implementation 'org.yaml:snakeyaml:2.2'
     implementation 'org.freemarker:freemarker:2.3.32'
 }
