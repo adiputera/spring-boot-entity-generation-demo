@@ -19,8 +19,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     runtimeOnly 'com.h2database:h2'
     
-    // Core library must use compileOnly so it doesn't leak its models.jar to projects
-    compileOnly files("${buildDir}/generated-models/models.jar")
 }
 
 compileJava {

@@ -54,7 +54,7 @@ public <#if model.isAbstract?? && model.isAbstract>abstract </#if>class ${modelN
     </#if>
     <#if attrDef.relation??>
     @${attrDef.relation.type}<#if attrDef.relation.mappedBy??>(mappedBy = "${attrDef.relation.mappedBy}"<#if attrDef.relation.cascade??>, cascade = CascadeType.${attrDef.relation.cascade}</#if>)<#else><#if attrDef.relation.cascade??>(cascade = CascadeType.${attrDef.relation.cascade})</#if></#if>
-    <#if attrDef.relation.joinColumn??>
+    <#if attrDef.relation.joinColumn?? && !attrDef.relation.joinTable??>
     @JoinColumn(name = "${attrDef.relation.joinColumn}")
     </#if>
     <#if attrDef.relation.joinTable??>

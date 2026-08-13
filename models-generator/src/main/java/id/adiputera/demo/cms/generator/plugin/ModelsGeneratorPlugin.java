@@ -98,5 +98,15 @@ public class ModelsGeneratorPlugin implements Plugin<Project> {
         
         // We also need to add modelsImplementation dependencies to main compilation so it compiles against them
         project.getConfigurations().getByName(mainSourceSet.getCompileOnlyConfigurationName()).extendsFrom(modelsImpl);
+        
+        // Add modelsJar to the runtime classpath for tasks like bootRun and test
+        mainSourceSet.setRuntimeClasspath(mainSourceSet.getRuntimeClasspath().plus(project.files(modelsJar.flatMap(Jar::getArchiveFile))));
+        
+        // Add to test source set's compile and runtime classpath
+        SourceSet testSourceSet = sourceSets.findByName(SourceSet.TEST_SOURCE_SET_NAME);
+        if (testSourceSet != null) {
+            testSourceSet.setCompileClasspath(testSourceSet.getCompileClasspath().plus(project.files(modelsJar.flatMap(Jar::getArchiveFile))));
+            testSourceSet.setRuntimeClasspath(testSourceSet.getRuntimeClasspath().plus(project.files(modelsJar.flatMap(Jar::getArchiveFile))));
+        }
     }
 }

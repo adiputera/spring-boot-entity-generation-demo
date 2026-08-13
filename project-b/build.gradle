@@ -21,7 +21,6 @@ dependencies {
     
     implementation project(':core-commerce')
     
-    implementation files("${buildDir}/generated-models/models.jar")
 }
 
 compileJava {
